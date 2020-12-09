@@ -83,15 +83,15 @@ while True:
 		c = contour[0]
 		#((x, y), radius) = cv2.minEnclosingCircle(c)
 		x, y, w, h = cv2.boundingRect(c)
+		x_e = x + w
+		y_e = y + h
 		M = cv2.moments(c)
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 		# only proceed if the radius meets a minimum size
 		if w*h > 1:
 			# draw the circle and centroid on the frame,
 			# then update the list of tracked points
-			#cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 2)
 			cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-			#cv2.circle(frame, center, 5, (0, 0, 255), -1)
 			pts.appendleft(center)
 
 		# loop over the set of tracked points

@@ -1,29 +1,17 @@
 from collections import deque
+from centroidTracker import CentroidTracker
 import numpy as np
 import imutils
 import cv2
 import joblib
 import time
 #设定红色阈值，HSV空间
-img = cv2.imread('C:/Users/panho/Desktop/testpic.jpg')
-redLower = np.array([0, 0, 150])
+img = cv2.imread('D:/2020-11-03/Capture/multitest.jpg')
+redLower = np.array([0, 0, 130])
 redUpper = np.array([255, 255, 255])
 
-#########
-model = joblib.load('config.pkl')
-coor = np.array(model['ROI'])
-coor = coor.reshape((8, 2))
-
-mask = np.zeros((img.shape[0], img.shape[1]))
-
-cv2.fillConvexPoly(mask, coor, 1)
-mask = mask.astype(np.bool)
-
-out = np.zeros_like(img)
-out[mask] = img[mask]
-
-##########
-frame = imutils.resize(out, width=600)
+#frame = imutils.resize(img, width=600)
+frame = img
 blurred = cv2.GaussianBlur(frame, (5, 5), 0)
 #初始化追踪点的列表
 mybuffer = 64
@@ -40,15 +28,30 @@ mask = cv2.dilate(mask, None, iterations=2)
 cnts = cv2.findContours(mask.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[-2]
 print(len(cnts))
 
-
+contour = []
+rect = []
 colored_img = frame
 # colored_img = colored_img[100:, :, :]
 for i in range(len(cnts)):
-    if cnts[i].shape[0] > 10 and cnts[i].shape[0] < 15:
+    if cnts[i].shape[0] > 20 and cnts[i].shape[0] < 40:
+        contour.append(cnts[i])
         cv2.drawContours(colored_img, cnts, i, (255, 255, 0), 5)
         print(cnts[i].shape[0])
         cv2.imshow('contour-%d'%i, colored_img)
         cv2.waitKey()
         colored_img = frame
         # colored_img = colored_img[100:, :, :]
-cv2.destroyAllWindows()
+
+for i in range(len(contour)):
+    c = contour[i]
+    x, y, w, h = cv2.boundingRect(c)
+    x_e = x + w
+    y_e = y + h
+    r = (x,y,x_e,y_e)
+    rect.append(r)
+
+print(rect)
+
+ct = CentroidTracker()
+
+

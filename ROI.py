@@ -9,17 +9,18 @@ global point1, point2
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
+ap.add_argument("-p", "--point", help="indicate the maximal point of ROI")
 args = vars(ap.parse_args())
 
-# -----------------------鼠标操作相关------------------------------------------
-# ------------------------------------------------------------------------------
+# initialize points, points count and points list
 lsPointsChoose = []
 tpPointsChoose = []
 
 pointsCount = 0
 count = 0
-pointsMax = 8
+pointsMax = int(args["point"])
 pts_list = []
+
 
 def on_mouse(event, x, y, flags, param):
     global img, point1, point2, count, pointsMax
@@ -27,11 +28,6 @@ def on_mouse(event, x, y, flags, param):
     global pointsCount  # 对鼠标按下的点计数
     global img2, ROI_bymouse_flag
     img2 = img.copy()  # 此行代码保证每次都重新再原图画  避免画多了
-    # -----------------------------------------------------------
-
-    #    count=count+1
-    #    print("callback_count",count)
-    # --------------------------------------------------------------
 
     if event == cv2.EVENT_LBUTTONDOWN:  # 左键点击
 
@@ -55,19 +51,17 @@ def on_mouse(event, x, y, flags, param):
         for i in range(len(tpPointsChoose) - 1):
             print('i', i)
             cv2.line(img2, tpPointsChoose[i], tpPointsChoose[i + 1], (0, 0, 255), 5)
-        # ----------------------------------------------------------------------
-        # ----------点击到pointMax时可以提取去绘图----------------
-        if (pointsCount == pointsMax):
-            # -----------绘制感兴趣区域-----------
-            # ----------------------------------
+        # when number of points reaches max, extract image
+        if pointsCount == pointsMax:
+            # draw ROI
             ROI_byMouse()
             ROI_bymouse_flag = 1
             lsPointsChoose = []
 
         # --------------------------------------------------------
         cv2.imshow('src', img2)
-    # -------------------------右键按下清除轨迹-----------------------------
-    if event == cv2.EVENT_RBUTTONDOWN:  # 右键点击
+    # right click to clear track
+    if event == cv2.EVENT_RBUTTONDOWN:
         print("right-mouse")
         pointsCount = 0
         tpPointsChoose = []
@@ -79,9 +73,6 @@ def on_mouse(event, x, y, flags, param):
         cv2.imshow('src', img2)
 
 
-# -----------------------------------------------------------------------
-# %%
-# --------------------------------------------------------------
 def ROI_byMouse():
     global src, ROI, ROI_flag, mask2
     mask = np.zeros(img.shape, np.uint8)
@@ -91,14 +82,14 @@ def ROI_byMouse():
     # reshape 后的 pts.shape=(4,1,2)
     # --------------画多边形---------------------
     mask = cv2.polylines(mask, [pts], True, (0, 255, 255))
-    #mask = cv2.circle(mask, (447, 63), 63, (0, 0, 255), -1)
+    # mask = cv2.circle(mask, (447, 63), 63, (0, 0, 255), -1)
     ##-------------填充多边形---------------------
     mask2 = cv2.fillPoly(mask, [pts], (255, 255, 255))
     cv2.imshow('mask', mask2)
     #    cv2.imwrite('mask20624.bmp',mask2 )
     ROI = cv2.bitwise_and(mask2, img)
     #    cv2.imwrite('ROI0624.bmp',ROI)
-    #cv2.imshow('ROI', ROI)
+    # cv2.imshow('ROI', ROI)
     pts_list.append(pts)
 
 
@@ -119,7 +110,7 @@ def main():
         if key == ord("s"):
             saved_data = {"ROI": pts_list}
             joblib.dump(value=saved_data, filename="config.pkl")
-            print("[INFO] ROI坐标已保存到本地.")
+            print("[INFO] ROI coordinates has been saved ")
             break
     cv2.destroyAllWindows()
 
