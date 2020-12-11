@@ -1,7 +1,6 @@
 # import the necessary packages
-from centroidTracker import CentroidTracker
+from centroidtracker import CentroidTracker
 from detector import TargetDetector
-from imutils.video import VideoStream
 import numpy as np
 import argparse
 import imutils
@@ -31,8 +30,6 @@ while True:
     # read the next frame from the video stream and resize it
     frame = vs.read()
     frame = frame[1]
-    #frame = imutils.resize(frame, width=600)
-
     rects = dt.detector(frame)
 
     # update our centroid tracker using the computed set of bounding
@@ -47,6 +44,11 @@ while True:
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+
+    for r in rects:
+        x, y, x_e, y_e = r
+        cv2.rectangle(frame, (x, y), (x_e, y_e), (0, 255, 0), 2)
+
 
     # show the output frame
     cv2.imshow("Frame", frame)

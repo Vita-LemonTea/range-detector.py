@@ -1,5 +1,5 @@
 from collections import deque
-from centroidTracker import CentroidTracker
+from centroidtracker import CentroidTracker
 import numpy as np
 import imutils
 import cv2
