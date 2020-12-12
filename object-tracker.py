@@ -11,8 +11,6 @@ import cv2
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",
                 help="path to the (optional) video file")
-ap.add_argument("-b", "--buffer", type=int, default=32,
-                help="max buffer size")
 args = vars(ap.parse_args())
 
 # initialize our centroid tracker and frame dimensions
@@ -27,7 +25,7 @@ time.sleep(2.0)
 
 # loop over the frames from the video stream
 while True:
-    # read the next frame from the video stream and resize it
+    # read the next frame from the video stream
     frame = vs.read()
     frame = frame[1]
     rects = dt.detector(frame)
