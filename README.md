@@ -11,5 +11,5 @@ The software can be installed through:
 ```
 git https://github.com/hongbingp/objectTracking.git
 cd objectTracking
-python TBdiag.py
+python object-tracker.py
 ```
