@@ -10,6 +10,13 @@ The software can be installed through:
 
 ```
 git https://github.com/hongbingp/objectTracking.git
-cd objectTracking
-python object-tracker.py
 ```
+
+## Usage
+
+```
+python ROI.py –v your_video_path –p number_of_vertexes
+python object-tracker.py –v your_video_path
+```
+
+
